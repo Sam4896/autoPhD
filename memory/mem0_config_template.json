@@ -1,0 +1,23 @@
+{
+  "_comment": "Copy to mem0_config.json and fill in your API key. Do not commit mem0_config.json.",
+
+  "api_key": "YOUR_MEM0_API_KEY_HERE",
+  "api_base": "https://api.mem0.ai",
+  "user_id": "autoresearch",
+
+  "search_config": {
+    "top_k": 5,
+    "min_relevance_score": 0.5,
+    "dedup": true
+  },
+
+  "store_config": {
+    "add_timestamp": true,
+    "add_project_prefix": true
+  },
+
+  "project_namespacing": {
+    "enabled": true,
+    "format": "{project}::{type}::{hypothesis}"
+  }
+}
