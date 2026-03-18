@@ -25,7 +25,7 @@ Each file is a self-contained instruction for a coding agent (Cursor, Claude, or
 |------|-----------|--------|--------------|
 | 1 | `01_build_budget_guard.md` | `brain/budget.py` | `python -m pytest tests/test_budget.py` |
 | 2 | `02_build_invoke_layer.md` | `brain/invoke.py`, `brain/git_utils.py` | `python -m pytest tests/test_invoke_routing.py` |
-| 3 | `03_build_adapter_template.md` | `templates/autoresearch_adapter.py.template` | `python -m pytest tests/test_adapter_template.py` |
+| 3 | `03_build_adapter_template.md` | `templates/autoPhD_adapter.py.template` | `python -m pytest tests/test_adapter_template.py` |
 | 4 | `04_build_health_checker_gen.md` | `templates/health_checker.py.j2`, `brain/health_checker_gen.py` | `python -m pytest tests/test_health_checker_gen.py` |
 | 5 | `05_build_github_actions.md` | `templates/brain_listen.yml`, `templates/experiment_resume.yml` | Manual test with test repo |
 | 6 | `06_build_connect_cli.md` | `brain/connect.py` | Integration test (see spec) |
@@ -78,7 +78,7 @@ brain/
 └── connect.py         ← step 6
 
 templates/
-├── autoresearch_adapter.py.template  ← step 3
+├── autoPhD_adapter.py.template  ← step 3
 ├── health_checker.py.j2              ← step 4
 ├── brain_listen.yml                  ← step 5
 └── experiment_resume.yml             ← step 5

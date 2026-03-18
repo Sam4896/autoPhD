@@ -7,14 +7,14 @@ max_output_tokens: 4000
 invoked_by: [main_agent]
 invokes: []
 reads:
-  - .autoresearch/state.md (INSTRUCTION FOR block only)
+  - .autoPhD/state.md (INSTRUCTION FOR block only)
   - projects/{project}/hypotheses/{active}.md
   - projects/{project}/project.md
-  - .autoresearch/config.json
+  - .autoPhD/config.json
   - src/{relevant files listed in instruction} (within allowed_paths only)
 writes:
   - src/{files within allowed_paths}
-  - .autoresearch/experiment_completed.json
+  - .autoPhD/experiment_completed.json
 gemini_tasks: []
 ---
 
@@ -36,7 +36,7 @@ It is a code writer, not a scientist. It does not make scientific decisions. It 
 
 ## What triggers an invocation
 
-A `## INSTRUCTION FOR EXPERIMENT AGENT` block in `.autoresearch/state.md` from Main Agent.
+A `## INSTRUCTION FOR EXPERIMENT AGENT` block in `.autoPhD/state.md` from Main Agent.
 
 Common scenarios:
 1. **Initial implementation** — experiment code does not exist; implement run_experiment.py and the method
@@ -58,7 +58,7 @@ Read the `## INSTRUCTION FOR EXPERIMENT AGENT` block completely. Extract:
 - **Required outputs** (from `### Required outputs` section)
 - **Allowed paths** (from `### Constraints` section — respect these absolutely)
 
-If any requirement is ambiguous in a way requiring scientific judgement (e.g., "which acquisition function to use"), do not guess. Write a clarification request to `.autoresearch/state.md`:
+If any requirement is ambiguous in a way requiring scientific judgement (e.g., "which acquisition function to use"), do not guess. Write a clarification request to `.autoPhD/state.md`:
 
 ```
 ### {timestamp} — Experiment Agent Clarification Needed [Experiment Agent]
@@ -107,7 +107,7 @@ Write code to the files specified, within `allowed_paths` only. Rules:
 After writing code, run the smoke test:
 
 ```bash
-python run_experiment.py .autoresearch/smoke_test_config.json
+python run_experiment.py .autoPhD/smoke_test_config.json
 ```
 
 The smoke test config has: 1 seed, 5 iterations, fast settings. It must:
@@ -118,7 +118,7 @@ The smoke test config has: 1 seed, 5 iterations, fast settings. It must:
 
 If the smoke test fails:
 - Do NOT recursively attempt to fix it more than 2 times
-- Write the error to `.autoresearch/experiment_completed.json` with `status: smoke_test_failed`
+- Write the error to `.autoPhD/experiment_completed.json` with `status: smoke_test_failed`
 - Include the traceback and the first 10 lines of log.csv if it exists
 
 ### Phase 5: Write completion signal

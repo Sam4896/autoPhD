@@ -10,7 +10,7 @@
 
 `health_checker_gen.py` reads `projects/{project}/health_thresholds.md` (the user-filled file) and generates a working `health_checker.py` using the Jinja2 template `health_checker.py.j2`.
 
-The generated `health_checker.py` is committed to the experiment repo during `autoresearch connect`. It runs on the cluster as a subprocess called by `autoresearch_adapter.py`.
+The generated `health_checker.py` is committed to the experiment repo during `autoPhD connect`. It runs on the cluster as a subprocess called by `autoPhD_adapter.py`.
 
 ---
 

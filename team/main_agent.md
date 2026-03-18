@@ -7,19 +7,19 @@ max_output_tokens: 2000
 invoked_by: [brain_listen.yml, human]
 invokes: [experiment_agent, monitor_agent, analyst_agent, summarizer_agent, bug_analyst_agent]
 reads:
-  - .autoresearch/state.md
-  - .autoresearch/budget.json
-  - .autoresearch/monitor_report.md
-  - .autoresearch/final_report.md
-  - .autoresearch/artifact_bundle.md
-  - .autoresearch/security_review.md
+  - .autoPhD/state.md
+  - .autoPhD/budget.json
+  - .autoPhD/monitor_report.md
+  - .autoPhD/final_report.md
+  - .autoPhD/artifact_bundle.md
+  - .autoPhD/security_review.md
   - projects/{project}/hypotheses/{active}.md
   - projects/{project}/project.md
 writes:
-  - .autoresearch/state.md (append only)
-  - .autoresearch/config.json
-  - .autoresearch/interrupt.json
-  - .autoresearch/NOTIFICATION.md
+  - .autoPhD/state.md (append only)
+  - .autoPhD/config.json
+  - .autoPhD/interrupt.json
+  - .autoPhD/NOTIFICATION.md
   - projects/{project}/history/{run-id}_summary.md
 gemini_tasks: []
 ---
@@ -58,7 +58,7 @@ Between these events, the Main Agent should not be running. Zero tokens on idle.
 ### Phase 0: Budget check (FIRST — before reading anything else)
 
 ```python
-budget = read(".autoresearch/budget.json")
+budget = read(".autoPhD/budget.json")
 if budget.used.trials >= budget.limits.n_experiment_trials:
     write_notification("Budget exhausted: max trials reached")
     exit()
@@ -75,7 +75,7 @@ If budget is exhausted, write `BUDGET_EXHAUSTED` to state.md and stop. No furthe
 1. Read team/roles.md                          (if not in context)
 2. Read projects/{project}/project.md          (if not in context)
 3. Read active hypothesis file                 (always — it may have changed)
-4. Read .autoresearch/state.md                 (the current situation)
+4. Read .autoPhD/state.md                 (the current situation)
 5. Read any pending report files               (monitor_report, final_report, artifact_bundle)
 6. Query Mem0: hypothesis ID + benchmark name  (retrieve top 5 memories)
 7. Identify: what event triggered this session?
@@ -102,7 +102,7 @@ Write out your reasoning explicitly before producing any output. This is not for
 
 ```
 14. Write Mem0 entry for this reasoning step
-15. Append timeline entry to .autoresearch/state.md
+15. Append timeline entry to .autoPhD/state.md
 16. Write instruction block(s) for subagent(s) if needed
 17. Update interrupt.json if interrupting
 18. Update config.json if changing experiment parameters
@@ -273,7 +273,7 @@ Before any code change is committed to the experiment repo's `src/`, write `PEND
 **Action proposed:** {one sentence — e.g., "Apply bug fix to src/methods/sa_raasp.py"}
 **Reason:** {why this change is needed}
 **PR:** #{pr_number} — {pr_url}
-**What happens next:** Human reviews and merges PR. Then re-run autoresearch_adapter.py.
+**What happens next:** Human reviews and merges PR. Then re-run autoPhD_adapter.py.
 ```
 
 Do not increment the trial counter until the human has approved and relaunched.

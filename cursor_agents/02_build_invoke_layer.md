@@ -29,8 +29,8 @@
 def invoke(
     event_type: str,           # From commit message: "health: RED", "complete:", etc.
     experiment_repo_path: Path, # Local checkout of the experiment repo
-    brain_repo_path: Path,      # Local checkout of the autoresearch repo
-    config: dict,              # Loaded from .autoresearch/config.json
+    brain_repo_path: Path,      # Local checkout of the autoPhD repo
+    config: dict,              # Loaded from .autoPhD/config.json
     dry_run: bool = False,     # If True, don't commit/push (for testing)
 ) -> InvokeResult:
     """
@@ -60,8 +60,8 @@ EVENT_ROUTING = {
 The routing is based on commit message prefix matching. If `kill_permanent: true` in `interrupt.json`, route to `[]` (do nothing).
 
 **Completion signals** (written by Haiku code agents, read by invoke.py):
-- `.autoresearch/experiment_completed.json` — Experiment Agent writes this after impl + smoke test
-- `.autoresearch/bug_completed.json` — Bug Fixer Agent writes this after fix + smoke test
+- `.autoPhD/experiment_completed.json` — Experiment Agent writes this after impl + smoke test
+- `.autoPhD/bug_completed.json` — Bug Fixer Agent writes this after fix + smoke test
 - `brain/invoke.py` reads these, commits them, and fires the appropriate routing event above
 
 ### Agent invocation
@@ -113,8 +113,8 @@ After every agent call, append one JSON line:
   "model": "{model}",
   "input_tokens": 1240,
   "output_tokens": 380,
-  "input_files": [".autoresearch/heartbeat.json"],
-  "output_file": ".autoresearch/monitor_report.md",
+  "input_files": [".autoPhD/heartbeat.json"],
+  "output_file": ".autoPhD/monitor_report.md",
   "duration_ms": 4200,
   "cost_usd": 0.0041,
   "event": "YELLOW_HEARTBEAT",

@@ -1,6 +1,6 @@
 # AutoPhD — System Architecture v1.0
 
-Complete reference for the AutoResearch Brain system. Read this before modifying any component.
+Complete reference for the AutoPhD Brain system. Read this before modifying any component.
 
 ---
 
@@ -46,7 +46,7 @@ It is not a code generator. It is not a paper writer. It is a scientific orchest
 | **Event-driven agents** | GitHub Actions is the trigger. Agents never poll. Zero idle tokens. |
 | **Budget before action** | Every agent invocation checks `budget.json` first. Over budget = no call. |
 | **Human-in-loop by default** | `approval_required: true` is the default. Autonomous is opt-in. |
-| **One adapter file** | Only one file (`autoresearch_adapter.py`) is added to the experiment repo. |
+| **One adapter file** | Only one file (`autoPhD_adapter.py`) is added to the experiment repo. |
 | **Security first** | All external inputs are scanned. All code changes require Security Agent sign-off. |
 | **Memory in two tiers** | Experiment: `agent_comms.jsonl` (always) + Mem0 (semantic). Dev: `.memories/` (episodic + semantic). |
 | **Hypothesis file drives everything** | Health thresholds, stopping rules, allowed paths — all come from the hypothesis. |
@@ -56,7 +56,7 @@ It is not a code generator. It is not a paper writer. It is a scientific orchest
 ## 2. The Two-Repo Pattern
 
 ```
-autoresearch/                    ← THE BRAIN (this repo)
+autoPhD/                    ← THE BRAIN (this repo)
 │
 ├── team/                        ← Agent behavioral contracts (markdown + frontmatter)
 ├── templates/                   ← Files generated into the experiment repo
@@ -70,9 +70,9 @@ autoresearch/                    ← THE BRAIN (this repo)
     └── context/
 
 experiment-repo/                 ← THE BODY (any experiment repo, on GitHub)
-│   (the user's existing code, untouched except for .autoresearch/)
+│   (the user's existing code, untouched except for .autoPhD/)
 │
-├── .autoresearch/               ← Brain writes here (on the experiment branch)
+├── .autoPhD/               ← Brain writes here (on the experiment branch)
 │   ├── config.json              ← Main Agent writes once at setup
 │   ├── state.md                 ← Append-only audit trail
 │   ├── budget.json              ← Token/trial counters (updated every agent call)
@@ -86,7 +86,7 @@ experiment-repo/                 ← THE BODY (any experiment repo, on GitHub)
 │   ├── NOTIFICATION.md          ← Written when human attention is needed
 │   └── bug_report.md            ← Bug Analyst Agent writes
 │
-├── autoresearch_adapter.py      ← THE ADAPTER (generated, one file)
+├── autoPhD_adapter.py      ← THE ADAPTER (generated, one file)
 ├── health_checker.py            ← Generated from health_thresholds.md
 └── .github/workflows/
     ├── brain_listen.yml         ← Fires on adapter commits (cluster→brain)
@@ -105,8 +105,8 @@ The adapter runs `health_checker.py` on a background thread continuously. When h
 
 ```
 health_checker detects bad health
-  → writes .autoresearch/heartbeat.json
-  → git add .autoresearch/heartbeat.json
+  → writes .autoPhD/heartbeat.json
+  → git add .autoPhD/heartbeat.json
   → git commit -m "health: {GREEN|YELLOW|RED} iter={n}/{budget} {flag}"
   → git push origin exp/{branch}
   → GitHub Action brain_listen.yml fires
@@ -126,8 +126,8 @@ complete: iter=143/200 status=interrupted
 
 When the brain needs to intervene:
 ```
-brain writes .autoresearch/interrupt.json or config.json update
-  → git add .autoresearch/
+brain writes .autoPhD/interrupt.json or config.json update
+  → git add .autoPhD/
   → git commit -m "brain: interrupt reason=plateau_unresolved"
   → git push origin exp/{branch}
   → GitHub Action experiment_resume.yml fires (notification only)
@@ -187,10 +187,10 @@ Human
 All agents communicate through **files on the experiment branch**, not through direct API calls to each other.
 
 ```
-Main Agent writes:        .autoresearch/state.md (INSTRUCTION FOR ... block)
-Subagent reads:           .autoresearch/state.md
-Subagent writes:          .autoresearch/{report}.md
-Main Agent reads next:    .autoresearch/{report}.md on next invocation
+Main Agent writes:        .autoPhD/state.md (INSTRUCTION FOR ... block)
+Subagent reads:           .autoPhD/state.md
+Subagent writes:          .autoPhD/{report}.md
+Main Agent reads next:    .autoPhD/{report}.md on next invocation
 ```
 
 No agent invokes another agent directly. The GitHub Action invocation system is the only entry point.
@@ -229,7 +229,7 @@ Task is template-filling, writing, or summarization        → Gemini Flash (fre
 
 ### Budget File Structure
 
-`.autoresearch/budget.json` — checked before every agent invocation:
+`.autoPhD/budget.json` — checked before every agent invocation:
 
 ```json
 {
@@ -291,13 +291,13 @@ def check_budget(agent_name: str, estimated_tokens: int) -> BudgetCheckResult:
     return BudgetCheckResult.OK, "Within budget"
 ```
 
-When budget is exceeded: write `BUDGET_EXHAUSTED.md` to `.autoresearch/`, write `NOTIFICATION.md`, stop all agent activity. Human must review and optionally increase limits.
+When budget is exceeded: write `BUDGET_EXHAUSTED.md` to `.autoPhD/`, write `NOTIFICATION.md`, stop all agent activity. Human must review and optionally increase limits.
 
 ---
 
 ## 6. The Adapter — Cluster Sidecar
 
-`autoresearch_adapter.py` is the **only file added to the experiment repo**. It does exactly four things:
+`autoPhD_adapter.py` is the **only file added to the experiment repo**. It does exactly four things:
 
 ### 1. Wraps run_experiment.py as a subprocess
 ```python
@@ -331,7 +331,7 @@ The main experiment process **never touches git**. Only the adapter thread does.
 ### 4. Commits the initial "started" commit on first run
 ```python
 # When adapter starts:
-git_commit(".autoresearch/state.md", f"experiment: started {run_id} H{hypothesis_id}")
+git_commit(".autoPhD/state.md", f"experiment: started {run_id} H{hypothesis_id}")
 git_push()
 ```
 
@@ -341,7 +341,7 @@ This "started" commit is what triggers the `brain_listen.yml` action for the fir
 
 ```bash
 # Instead of: python run_experiment.py config.json
-# Run:        python autoresearch_adapter.py run_experiment.py config.json
+# Run:        python autoPhD_adapter.py run_experiment.py config.json
 ```
 
 The adapter passes through all arguments to `run_experiment.py`.
@@ -359,8 +359,8 @@ on:
   push:
     branches: ['exp/*']
     paths:
-      - '.autoresearch/heartbeat.json'
-      - '.autoresearch/completion_flag.json'
+      - '.autoPhD/heartbeat.json'
+      - '.autoPhD/completion_flag.json'
 
 jobs:
   invoke-brain:
@@ -372,7 +372,7 @@ jobs:
       - name: Checkout brain repo
         uses: actions/checkout@v4
         with:
-          repository: {your-org}/autoresearch
+          repository: {your-org}/autoPhD
           path: brain
           token: ${{ secrets.AUTORESEARCH_READ_TOKEN }}  # read-only PAT if private
 
@@ -400,7 +400,7 @@ jobs:
 3. Checks `budget.json` — abort if over budget
 4. Routes to the appropriate agent (monitor / analyst / main)
 5. Runs the agent via Claude CLI (`claude --print`) or Gemini API
-6. Agent output is written to `.autoresearch/`
+6. Agent output is written to `.autoPhD/`
 7. If action needed (interrupt, config change): commits back and pushes
 
 ### experiment_resume.yml (Brain → Cluster notification)
@@ -412,9 +412,9 @@ on:
   push:
     branches: ['exp/*']
     paths:
-      - '.autoresearch/interrupt.json'
-      - '.autoresearch/PENDING_APPROVAL.md'
-      - '.autoresearch/NOTIFICATION.md'
+      - '.autoPhD/interrupt.json'
+      - '.autoPhD/PENDING_APPROVAL.md'
+      - '.autoPhD/NOTIFICATION.md'
 ```
 
 The adapter's background thread picks up `interrupt.json` via its 30-second `git pull` loop.
@@ -427,7 +427,7 @@ For private experiment repos:
 - `GEMINI_API_KEY`: stored as repo secret
 - `GITHUB_TOKEN`: auto-provided by GitHub Actions (write access to the experiment repo)
 
-The `autoresearch connect` command sets all secrets automatically via `gh secret set`.
+The `autoPhD connect` command sets all secrets automatically via `gh secret set`.
 
 ---
 
@@ -445,7 +445,7 @@ Bug Analyst identifies bug
   → Brain writes PENDING_APPROVAL.md: "PR #{n} ready for review. Merge to continue."
   → Human reviews PR in GitHub / Cursor / VS Code
   → Human merges PR
-  → Experiment can be relaunched (human re-runs autoresearch_adapter.py)
+  → Experiment can be relaunched (human re-runs autoPhD_adapter.py)
 ```
 
 The brain never merges PRs. Merging is a human action.
@@ -517,7 +517,7 @@ An agent writing incorrect data to `state.md` could mislead future agents.
 
 ```json
 {
-  "allowed_paths": ["src/methods/", "src/config/", ".autoresearch/"],
+  "allowed_paths": ["src/methods/", "src/config/", ".autoPhD/"],
   "protected_paths": ["src/benchmarks/", "data/", "run_experiment.py", ".github/"]
 }
 ```
@@ -549,7 +549,7 @@ Tier 3: Mem0                   ← semantic search across experiments, may fail 
 Written by `brain/invoke.py` for **every agent call**. JSON Lines format:
 
 ```json
-{"ts":"2026-03-17T14:23:01Z","agent":"monitor","model":"claude-sonnet-4-6","input_tokens":1240,"output_tokens":380,"input_files":[".autoresearch/heartbeat.json"],"output_file":".autoresearch/monitor_report.md","duration_ms":4200,"cost_usd":0.0041,"event":"YELLOW_HEARTBEAT","action_taken":"ESCALATE_TO_MAIN","run_id":"exp-H001-20260317","trial":1}
+{"ts":"2026-03-17T14:23:01Z","agent":"monitor","model":"claude-sonnet-4-6","input_tokens":1240,"output_tokens":380,"input_files":[".autoPhD/heartbeat.json"],"output_file":".autoPhD/monitor_report.md","duration_ms":4200,"cost_usd":0.0041,"event":"YELLOW_HEARTBEAT","action_taken":"ESCALATE_TO_MAIN","run_id":"exp-H001-20260317","trial":1}
 ```
 
 This file is the ground truth audit log. It persists on the experiment branch. It can be used to:
@@ -605,7 +605,7 @@ The timestamp prevents naming conflicts on relaunches.
 ### Branch Lifecycle
 
 ```
-1. Created by:    autoresearch connect (--branch exp/...)
+1. Created by:    autoPhD connect (--branch exp/...)
 2. Active during: experiment run (adapter + brain both push to it)
 3. Complete when: Main Agent writes final verdict to state.md
 4. Human action:  Review state.md + final_report.md + agent_dialogue.md
@@ -632,7 +632,7 @@ Do not merge if:
 ### CLI Command
 
 ```bash
-autoresearch kill \
+autoPhD kill \
   --repo https://github.com/you/exp-repo \
   --branch exp/riemannian-bo-H001-20260317-143022 \
   --reason "hypothesis fundamentally flawed"
@@ -640,7 +640,7 @@ autoresearch kill \
 
 ### What it does
 
-1. Writes `.autoresearch/interrupt.json`:
+1. Writes `.autoPhD/interrupt.json`:
    ```json
    {"interrupt": true, "reason": "user_kill", "kill_permanent": true, "ts": "..."}
    ```
@@ -657,7 +657,7 @@ autoresearch kill \
 
 ### Emergency kill (if CLI not available)
 
-Go to the experiment repo on GitHub, edit `.autoresearch/interrupt.json` manually and commit with message `"kill: user_emergency"`. The adapter will pick it up within 30 seconds.
+Go to the experiment repo on GitHub, edit `.autoPhD/interrupt.json` manually and commit with message `"kill: user_emergency"`. The adapter will pick it up within 30 seconds.
 
 ---
 
@@ -684,7 +684,7 @@ Bug detected (RED heartbeat or smoke_test_failed)
   │   - src/{identified file} (the file most likely containing the bug)
   │   → writes the fix directly to src/ (within allowed_paths)
   │   → runs smoke test inline
-  │   → writes .autoresearch/bug_completed.json
+  │   → writes .autoPhD/bug_completed.json
   │
   ├── brain/security.py scans the diff (inline Python, no LLM cost):
   │   - checks allowed_paths
@@ -774,7 +774,7 @@ The Main Agent may NOT in EXPLORE mode:
 
 ## 15. N_EXPERIMENT_TRIAL Guard Rail
 
-Each run of `autoresearch_adapter.py` counts as one **trial**. The budget limits `n_experiment_trials`.
+Each run of `autoPhD_adapter.py` counts as one **trial**. The budget limits `n_experiment_trials`.
 
 Trial counter increments when:
 - The adapter starts a new run (including relaunches after interrupt)
@@ -794,7 +794,7 @@ When `trials >= n_experiment_trials`:
 
 ## 16. CI/CD for the Brain Itself
 
-The autoresearch repo should have its own CI:
+The AutoPhD repo should have its own CI:
 
 `.github/workflows/validate_brain.yml`:
 ```yaml
@@ -825,16 +825,16 @@ jobs:
 
 ## 17. Complete File Map
 
-### Brain Repo (autoresearch/)
+### Brain Repo (autoPhD/)
 
 ```
-autoresearch/
+autoPhD/
 ├── ARCHITECTURE.md          ← This file
 ├── CLAUDE.md                ← Main Agent boot instructions
 ├── README.md                ← Human-facing overview
 │
 ├── brain/
-│   ├── connect.py           ← `autoresearch connect` CLI command
+│   ├── connect.py           ← `autoPhD connect` CLI command
 │   ├── invoke.py            ← Routes events to agents, checks budget, logs to agent_comms.jsonl
 │   ├── budget.py            ← Budget enforcement before every call
 │   ├── security.py          ← Injection scanner, code safety checker
@@ -858,7 +858,7 @@ autoresearch/
 │   ├── log_schema.md
 │   ├── heartbeat_schema.md
 │   ├── config_template.json           ← Full config schema with all fields
-│   ├── autoresearch_adapter.py.template ← The cluster sidecar
+│   ├── autoPhD_adapter.py.template ← The cluster sidecar
 │   ├── health_checker.py.j2           ← Jinja2 template, filled from health_thresholds
 │   ├── brain_listen.yml               ← GitHub Actions (cluster→brain)
 │   └── experiment_resume.yml          ← GitHub Actions (brain→cluster)
@@ -909,13 +909,13 @@ autoresearch/
             └── prior_work.md
 ```
 
-### What Gets Created in the Experiment Repo (on `autoresearch connect`)
+### What Gets Created in the Experiment Repo (on `autoPhD connect`)
 
 ```
 experiment-repo/  (on exp branch)
-├── autoresearch_adapter.py    ← copied from template, parameterized
+├── autoPhD_adapter.py    ← copied from template, parameterized
 ├── health_checker.py          ← generated from health_thresholds.md
-├── .autoresearch/
+├── .autoPhD/
 │   ├── config.json            ← Main Agent writes
 │   ├── state.md               ← initial state
 │   ├── budget.json            ← initial budget
@@ -955,7 +955,7 @@ Step 6: brain/invoke.py
         → Routes events to agents. Reads frontmatter, calls claude/gemini, logs to agent_comms.
         → Test: tests/test_invoke_routing.py
 
-Step 7: templates/autoresearch_adapter.py.template
+Step 7: templates/autoPhD_adapter.py.template
         → The cluster sidecar. Can be tested standalone.
         → Test: tests/test_adapter_template.py
 
@@ -971,7 +971,7 @@ Step 10: brain/git_utils.py
 Step 11: brain/connect.py
          → The CLI command. Integration test end-to-end.
 
-Step 12: CI for autoresearch itself
+Step 12: CI for autoPhD itself
          → .github/workflows/validate_brain.yml
 ```
 

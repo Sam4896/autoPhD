@@ -7,12 +7,12 @@ max_output_tokens: 1500
 invoked_by: [brain_listen.yml_on_yellow_red, main_agent, human]
 invokes: []
 reads:
-  - .autoresearch/heartbeat.json
+  - .autoPhD/heartbeat.json
   - log.csv (last 50 rows only)
   - diagnostics.csv (last 30 rows only — if it exists)
-  - .autoresearch/state.md (last 3 timeline entries only)
+  - .autoPhD/state.md (last 3 timeline entries only)
 writes:
-  - .autoresearch/monitor_report.md
+  - .autoPhD/monitor_report.md
 gemini_tasks: []
 ---
 
@@ -47,7 +47,7 @@ It does not make scientific decisions. It does not interpret results in the cont
 
 ### Phase 1: Read heartbeat first
 
-Before touching raw logs, read `.autoresearch/heartbeat.json`. This tells you what health_check.py already found. Your job is to explain *why* and *how serious*.
+Before touching raw logs, read `.autoPhD/heartbeat.json`. This tells you what health_check.py already found. Your job is to explain *why* and *how serious*.
 
 The heartbeat always contains:
 - `health`: green / yellow / red
@@ -91,7 +91,7 @@ The report must contain **processed information**, not raw data. Compute:
 
 ### Phase 4: Write the report
 
-Output: `.autoresearch/monitor_report.md` (overwrite previous — only latest matters)
+Output: `.autoPhD/monitor_report.md` (overwrite previous — only latest matters)
 
 ---
 

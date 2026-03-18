@@ -10,7 +10,7 @@ See `ARCHITECTURE.md §4` for the full agent hierarchy diagram.
 ```
 Human (You)
 ├── Writes hypothesis files and health_thresholds.md
-├── Approves launches (runs autoresearch_adapter.py on cluster)
+├── Approves launches (runs autoPhD_adapter.py on cluster)
 ├── Reviews PRs in GitHub / Cursor when approval_mode: approval_required
 ├── Monitors NOTIFICATION.md and PENDING_APPROVAL.md
 └── Makes final call on KILL when agent is uncertain
@@ -24,14 +24,14 @@ Main Agent — claude-opus-4-6 [main_agent.md]
 
 Monitor Agent — claude-sonnet-4-6 [monitor_agent.md]
 ├── Reads: heartbeat.json + last 50 rows log.csv + last 30 rows diagnostics.csv
-├── Writes: .autoresearch/monitor_report.md
+├── Writes: .autoPhD/monitor_report.md
 ├── Does: detect patterns, flag anomalies, assess trajectory
 ├── Limit: max 3000 input tokens, max 1500 output tokens
 └── Invoked: on heartbeat YELLOW/RED, or human check-in
 
 Analyst Agent — claude-sonnet-4-6 [analyst_agent.md]
 ├── Reads: full log.csv, full diagnostics.csv, hypothesis, state.md
-├── Writes: .autoresearch/final_report.md
+├── Writes: .autoPhD/final_report.md
 ├── Does: compute primary metric, significance tests, bootstrap CI (per hypothesis SAP)
 ├── Limit: thinking budget 5000 tokens, max 4000 output tokens
 └── Invoked: when experiment status → COMPLETE or KILLED
@@ -45,20 +45,20 @@ Summarizer Agent — gemini-3.1-flash-lite-preview [summarizer_agent.md]
 
 Experiment Agent — claude-haiku-4-5 [experiment_agent.md]
 ├── Reads: Main Agent instruction block, hypothesis, project.md, config.json, relevant src/ files
-├── Writes: src/{files within allowed_paths}, .autoresearch/experiment_completed.json
+├── Writes: src/{files within allowed_paths}, .autoPhD/experiment_completed.json
 ├── Does: implement experiment code directly via API, run smoke test inline
 ├── Gate: brain/security.py scans the diff before any commit (inline Python, no LLM cost)
 └── Invoked: when Main Agent issues a new implementation instruction
 
 Bug Fixer Agent — claude-haiku-4-5 [bug_analyst_agent.md]
 ├── Reads: monitor_report.md, heartbeat.json, config.json, src/{identified file}
-├── Writes: src/{fixed file within allowed_paths}, .autoresearch/bug_completed.json
+├── Writes: src/{fixed file within allowed_paths}, .autoPhD/bug_completed.json
 ├── Does: diagnose bug from monitor report, write minimal fix, run smoke test inline
 └── Invoked: on code bug (RED heartbeat from NaN/crash/shape error)
 
 Security Agent — claude-haiku-4-5 [security_agent.md]
 ├── Reads: web search results (EXPLORE mode), fetched URL content (GUIDED + EXPLORE)
-├── Writes: .autoresearch/security_review.md (APPROVED / REJECTED + reason)
+├── Writes: .autoPhD/security_review.md (APPROVED / REJECTED + reason)
 ├── Does: injection scan on external content before it reaches Main Agent or Analyst Agent
 ├── Does NOT review code — brain/security.py handles code safety inline (zero LLM cost)
 └── Invoked: after any WebSearch call or reference URL fetch
@@ -118,9 +118,9 @@ Security Agent — claude-haiku-4-5 [security_agent.md]
 Agents communicate through **files on the experiment branch**, not through direct calls.
 
 ```
-Main Agent writes instruction  →  .autoresearch/state.md (INSTRUCTION FOR block)
+Main Agent writes instruction  →  .autoPhD/state.md (INSTRUCTION FOR block)
 Subagent reads state.md        →  executes task
-Subagent writes output         →  .autoresearch/{report}.md or cursor_task.json
+Subagent writes output         →  .autoPhD/{report}.md or cursor_task.json
 Next invocation reads output   →  Main Agent or another agent reads the report
 ```
 

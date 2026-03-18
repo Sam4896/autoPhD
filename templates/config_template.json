@@ -6,7 +6,7 @@
   "project": "{project_name}",
   "branch": "exp/{project}-{hypothesis_id}-{YYYYMMDD-HHMMSS}",
   "experiment_repo": "https://github.com/{owner}/{repo}",
-  "brain_repo": "https://github.com/{owner}/autoresearch",
+  "brain_repo": "https://github.com/{owner}/autoPhD",
 
   "experiment": {
     "entry_point": "run_experiment.py",
@@ -23,23 +23,23 @@
   },
 
   "paths": {
-    "log": ".autoresearch/log.csv",
-    "diagnostics": ".autoresearch/diagnostics.csv",
-    "interrupt": ".autoresearch/interrupt.json",
-    "heartbeat": ".autoresearch/heartbeat.json",
-    "completion_flag": ".autoresearch/completion_flag.json",
-    "restart_flag": ".autoresearch/restart_flag.json",
-    "state": ".autoresearch/state.md",
-    "budget": ".autoresearch/budget.json",
-    "agent_comms": ".autoresearch/agent_comms.jsonl",
-    "agent_dialogue": ".autoresearch/agent_dialogue.md"
+    "log": ".autoPhD/log.csv",
+    "diagnostics": ".autoPhD/diagnostics.csv",
+    "interrupt": ".autoPhD/interrupt.json",
+    "heartbeat": ".autoPhD/heartbeat.json",
+    "completion_flag": ".autoPhD/completion_flag.json",
+    "restart_flag": ".autoPhD/restart_flag.json",
+    "state": ".autoPhD/state.md",
+    "budget": ".autoPhD/budget.json",
+    "agent_comms": ".autoPhD/agent_comms.jsonl",
+    "agent_dialogue": ".autoPhD/agent_dialogue.md"
   },
 
   "permissions": {
     "allowed_paths": [
       "src/methods/",
       "src/config/",
-      ".autoresearch/"
+      ".autoPhD/"
     ],
     "protected_paths": [
       "src/benchmarks/",

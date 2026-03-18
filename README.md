@@ -1,13 +1,13 @@
-# autoresearch
+# AutoPhD
 
 > An agentic research orchestration system for running, monitoring, and analysing ML experiments.  
-> Inspired by [karpathy/autoresearch](https://github.com/karpathy/autoresearch) and the agent harness pattern.
+> Inspired by [karpathy/autoresearch](https://github.com/karpathy/autoresearch) (the original research automation project that inspired this work).
 
 ---
 
 ## What this is
 
-`autoresearch` is a structured multi-agent system where a **Main Agent** (Opus) orchestrates a team of **Subagents** (Sonnet/Cursor) to run scientific experiments end-to-end — from hypothesis to conclusion — without requiring continuous human supervision.
+`AutoPhD` is a structured multi-agent system where a **Main Agent** (Opus) orchestrates a team of **Subagents** (Sonnet/Cursor) to run scientific experiments end-to-end — from hypothesis to conclusion — without requiring continuous human supervision.
 
 The system is designed around one core constraint: **the expensive model never watches logs**. It only reads structured summaries produced by cheap models or lightweight scripts. Token spend is proportional to events (problems, completions, surprises), not to wall-clock experiment time.
 
@@ -29,7 +29,7 @@ The system is designed around one core constraint: **the expensive model never w
 ## Repository Structure
 
 ```
-autoresearch/
+autoPhD/
 ├── README.md                          # This file
 ├── CLAUDE.md                          # Main Agent (Opus) master instructions
 ├── .cursorrules                       # Subagent (Sonnet/Cursor) instructions

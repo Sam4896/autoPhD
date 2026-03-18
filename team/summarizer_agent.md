@@ -7,16 +7,16 @@ max_output_tokens: 2000
 invoked_by: [after_analyst, after_main_agent_verdict, after_interrupt]
 invokes: []
 reads:
-  - .autoresearch/final_report.md
-  - .autoresearch/state.md
-  - .autoresearch/monitor_report.md
-  - .autoresearch/artifact_bundle.md
-  - .autoresearch/heartbeat.json
-  - .autoresearch/completion_flag.json
+  - .autoPhD/final_report.md
+  - .autoPhD/state.md
+  - .autoPhD/monitor_report.md
+  - .autoPhD/artifact_bundle.md
+  - .autoPhD/heartbeat.json
+  - .autoPhD/completion_flag.json
 writes:
-  - .autoresearch/artifact_bundle.md
+  - .autoPhD/artifact_bundle.md
   - projects/{project}/history/{run-id}_summary.md
-  - .autoresearch/agent_dialogue.md (appends entries)
+  - .autoPhD/agent_dialogue.md (appends entries)
 gemini_tasks: [artifact_bundle, history_summary, agent_dialogue_entry, mem0_entry_content]
 ---
 
@@ -276,7 +276,7 @@ Even in the condensed history summary, always preserve:
 
 ## agent_dialogue.md entry
 
-After every invocation, append an entry to `.autoresearch/agent_dialogue.md`:
+After every invocation, append an entry to `.autoPhD/agent_dialogue.md`:
 
 ```markdown
 ## {timestamp} — Summarizer Agent

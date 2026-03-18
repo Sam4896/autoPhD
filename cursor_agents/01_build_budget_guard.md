@@ -8,7 +8,7 @@
 
 ## What to build
 
-A budget enforcement module that is called before **every** agent invocation. It reads `.autoresearch/budget.json`, checks all limits, and returns a clear go/no-go decision with a reason.
+A budget enforcement module that is called before **every** agent invocation. It reads `.autoPhD/budget.json`, checks all limits, and returns a clear go/no-go decision with a reason.
 
 ---
 
@@ -59,7 +59,7 @@ def check_budget(
     Check if an agent invocation is within budget.
 
     Args:
-        budget_json_path: Path to .autoresearch/budget.json
+        budget_json_path: Path to .autoPhD/budget.json
         agent_name: One of: main, experiment, monitor, analyst, summarizer,
                     tester, security, pr_agent, bug_analyst
         estimated_input_tokens: Estimated input tokens for this call

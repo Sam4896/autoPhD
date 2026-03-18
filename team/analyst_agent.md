@@ -10,10 +10,10 @@ reads:
   - log.csv (full)
   - diagnostics.csv (full — if present)
   - projects/{project}/hypotheses/{active}.md (Statistical Analysis Plan + Falsification + References sections)
-  - .autoresearch/state.md
+  - .autoPhD/state.md
   - external URLs in hypothesis ## References (WebFetch, if relevant to statistical method — Security Agent scans first)
 writes:
-  - .autoresearch/final_report.md
+  - .autoPhD/final_report.md
 gemini_tasks: []
 ---
 

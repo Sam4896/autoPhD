@@ -8,7 +8,7 @@
 
 ## What to build
 
-The autoresearch brain repo needs its own quality gates:
+The autoPhD brain repo needs its own quality gates:
 
 1. **Tests** for each remaining component not covered in earlier steps
 2. **CI validators** that check structural requirements (agent frontmatter, template syntax)

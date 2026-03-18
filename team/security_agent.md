@@ -10,7 +10,7 @@ reads:
   - web search results (EXPLORE mode WebSearch only)
   - fetched URL content (user-provided references in hypothesis)
 writes:
-  - .autoresearch/security_review.md
+  - .autoPhD/security_review.md
 gemini_tasks: []
 ---
 
@@ -53,7 +53,7 @@ Tester Agent has returned PASS. Code is ready to commit. Before commit, Security
 #### 1. Allowed paths enforcement
 ```python
 # Load from config.json
-allowed_paths = config["allowed_paths"]   # e.g., ["src/methods/", "src/config/", ".autoresearch/"]
+allowed_paths = config["allowed_paths"]   # e.g., ["src/methods/", "src/config/", ".autoPhD/"]
 protected_paths = config["protected_paths"]  # e.g., ["src/benchmarks/", "data/", ".github/"]
 
 # Check every file in the diff
@@ -110,11 +110,11 @@ ABS_PATH_PATTERN = r'["\'][/\\][a-zA-Z](?!tmp)[^"\']*["\']'
 
 #### 5. Modification of protected files via code
 
-Check that no code writes to `.autoresearch/state.md`, `.autoresearch/config.json`, or any file in `.github/`:
+Check that no code writes to `.autoPhD/state.md`, `.autoPhD/config.json`, or any file in `.github/`:
 
 ```python
 PROTECTED_WRITE_PATTERNS = [
-    r'open\s*\([^)]*["\']\.autoresearch/state\.md["\'].*["\']w["\']',
+    r'open\s*\([^)]*["\']\.autoPhD/state\.md["\'].*["\']w["\']',
     r'Path\s*\([^)]*state\.md[^)]*\)\.write',
     r'\.github/',
 ]
@@ -196,7 +196,7 @@ If more than 5 patterns are detected in a single web result: reject the entire r
 
 ## Report format
 
-Output file: `.autoresearch/security_review.md`
+Output file: `.autoPhD/security_review.md`
 
 ```markdown
 # Security Review — {timestamp}

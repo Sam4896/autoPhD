@@ -7,13 +7,13 @@ max_output_tokens: 3000
 invoked_by: [main_agent_on_red_code_bug]
 invokes: []
 reads:
-  - .autoresearch/monitor_report.md
-  - .autoresearch/heartbeat.json
-  - .autoresearch/config.json
+  - .autoPhD/monitor_report.md
+  - .autoPhD/heartbeat.json
+  - .autoPhD/config.json
   - src/{file identified in monitor report} (within allowed_paths only)
 writes:
   - src/{fixed file, within allowed_paths only}
-  - .autoresearch/bug_completed.json
+  - .autoPhD/bug_completed.json
 gemini_tasks: []
 ---
 
@@ -37,7 +37,7 @@ This is Haiku because bug diagnosis from a structured monitor report is pattern-
 
 ## What triggers an invocation
 
-A `## INSTRUCTION FOR BUG FIXER AGENT` block in `.autoresearch/state.md`, triggered when:
+A `## INSTRUCTION FOR BUG FIXER AGENT` block in `.autoPhD/state.md`, triggered when:
 1. RED heartbeat with NaN, crash, shape error, or exception flag
 2. Experiment Agent wrote `experiment_completed.json` with `status: smoke_test_failed`
 
@@ -48,15 +48,15 @@ A `## INSTRUCTION FOR BUG FIXER AGENT` block in `.autoresearch/state.md`, trigge
 ### Phase 1: Read the evidence
 
 Read in order:
-1. `.autoresearch/heartbeat.json` — the flag that triggered RED
-2. `.autoresearch/monitor_report.md` — Monitor Agent's analysis: symptom, location, technical hypothesis, relevant log rows
-3. `.autoresearch/experiment_completed.json` — if the trigger was a smoke test failure, read this for the traceback
-4. `.autoresearch/config.json` — for allowed_paths, protected_paths, method names
+1. `.autoPhD/heartbeat.json` — the flag that triggered RED
+2. `.autoPhD/monitor_report.md` — Monitor Agent's analysis: symptom, location, technical hypothesis, relevant log rows
+3. `.autoPhD/experiment_completed.json` — if the trigger was a smoke test failure, read this for the traceback
+4. `.autoPhD/config.json` — for allowed_paths, protected_paths, method names
 
 Then read the source file most likely containing the bug, as identified in the monitor report's `## Anomaly details` section. Read only that file — cap to 200 lines around the suspected function.
 
 If the monitor report says "PARTIAL" or doesn't identify a specific file:
-- Write to `.autoresearch/state.md`:
+- Write to `.autoPhD/state.md`:
   ```
   ### {timestamp} — Bug Fixer Clarification Needed [Bug Fixer Agent]
   Monitor report does not identify specific code location.
@@ -97,7 +97,7 @@ Rules:
 
 Run the smoke test:
 ```bash
-python run_experiment.py .autoresearch/smoke_test_config.json
+python run_experiment.py .autoPhD/smoke_test_config.json
 ```
 
 Must complete within 30 seconds without the symptom that triggered the RED.

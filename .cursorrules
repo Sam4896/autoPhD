@@ -1,6 +1,6 @@
 # .cursorrules — Subagent Instructions
 
-You are a subagent in the `autoresearch` system. Read this file completely before acting.
+You are a subagent in the `autoPhD` system. Read this file completely before acting.
 
 ---
 
@@ -63,7 +63,7 @@ Parse each field. If a field is missing, read `CLAUDE.md` for the default instru
 
 **Never delete.** You may overwrite `monitor_report.md` (always the latest) and `final_report.md`. You never touch `state.md` except to append a question block. You never touch `config.json` unless you are the Experiment Agent instructed to update it. You never touch `interrupt.json`.
 
-**Paths are relative to the repo root.** All file paths in instruction blocks are relative to `autoresearch/`. Always resolve them correctly.
+**Paths are relative to the repo root.** All file paths in instruction blocks are relative to `autoPhD/`. Always resolve them correctly.
 
 ---
 

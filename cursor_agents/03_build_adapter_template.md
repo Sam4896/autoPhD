@@ -1,14 +1,14 @@
-# Step 3: Build templates/autoresearch_adapter.py.template
+# Step 3: Build templates/autoPhD_adapter.py.template
 
 **Prerequisites:** None (independent of steps 1–2 — can be built in parallel)
-**Output:** `templates/autoresearch_adapter.py.template`
+**Output:** `templates/autoPhD_adapter.py.template`
 **Test:** `python -m pytest tests/test_adapter_template.py -v`
 
 ---
 
 ## What to build
 
-`autoresearch_adapter.py` is the **only file added to the experiment repo's root**. It wraps `run_experiment.py` and handles all git communication. It must be:
+`autoPhD_adapter.py` is the **only file added to the experiment repo's root**. It wraps `run_experiment.py` and handles all git communication. It must be:
 
 - Self-contained (no imports from the brain repo)
 - Minimal (under 200 lines of real code)
@@ -23,14 +23,14 @@
 # These are replaced in the template when generating the actual file
 RUN_ID = "{{RUN_ID}}"                          # e.g., "exp-riemannian-bo-H001-20260317-143022"
 EXPERIMENT_BRANCH = "{{EXPERIMENT_BRANCH}}"    # e.g., "exp/riemannian-bo-H001-20260317-143022"
-AUTORESEARCH_DIR = "{{AUTORESEARCH_DIR}}"      # path to .autoresearch/ in the repo
+AUTORESEARCH_DIR = "{{AUTORESEARCH_DIR}}"      # path to .autoPhD/ in the repo
 HEALTH_CHECK_INTERVAL = {{HEALTH_CHECK_INTERVAL}}   # seconds, default 30
 GIT_PULL_INTERVAL = {{GIT_PULL_INTERVAL}}           # seconds, default 30
 ```
 
 ---
 
-## File to create: `templates/autoresearch_adapter.py.template`
+## File to create: `templates/autoPhD_adapter.py.template`
 
 The template must implement exactly this behavior:
 
@@ -38,8 +38,8 @@ The template must implement exactly this behavior:
 
 When the adapter starts, before launching run_experiment.py:
 ```python
-# Write initial state to .autoresearch/state.md (append "experiment: started" line)
-# git add .autoresearch/
+# Write initial state to .autoPhD/state.md (append "experiment: started" line)
+# git add .autoPhD/
 # git commit -m "experiment: started {RUN_ID} on {EXPERIMENT_BRANCH}"
 # git push origin {EXPERIMENT_BRANCH}
 ```
@@ -141,10 +141,10 @@ def git_push_with_retry(max_retries: int = 3, backoff: float = 5.0) -> bool:
 
 ```bash
 # Instead of: python run_experiment.py config.json
-# Use:        python autoresearch_adapter.py run_experiment.py config.json
+# Use:        python autoPhD_adapter.py run_experiment.py config.json
 ```
 
-All arguments after `autoresearch_adapter.py` are passed directly to `run_experiment.py`.
+All arguments after `autoPhD_adapter.py` are passed directly to `run_experiment.py`.
 
 ---
 
@@ -154,10 +154,10 @@ The adapter calls `health_checker.py` as a subprocess to compute health. The int
 
 ```bash
 python health_checker.py \
-  --log .autoresearch/log.csv \
-  --diagnostics .autoresearch/diagnostics.csv \
-  --config .autoresearch/config.json \
-  --output .autoresearch/heartbeat.json
+  --log .autoPhD/log.csv \
+  --diagnostics .autoPhD/diagnostics.csv \
+  --config .autoPhD/config.json \
+  --output .autoPhD/heartbeat.json
 # Exits with code 0. Writes heartbeat.json. Stdout is suppressed.
 ```
 

@@ -1,4 +1,4 @@
-# Step 6: Build brain/connect.py — the `autoresearch connect` CLI
+# Step 6: Build brain/connect.py — the `autoPhD connect` CLI
 
 **Prerequisites:** Steps 1–5 (all previous steps must be complete and tested)
 **Output:** `brain/connect.py`
@@ -11,7 +11,7 @@
 `brain/connect.py` is the single command that links the brain to an experiment repo. It is the "installation" process. Run it once per experiment.
 
 ```bash
-autoresearch connect \
+autoPhD connect \
   --repo https://github.com/you/exp-repo \
   --branch exp/riemannian-bo-H001-20260317-143022 \
   --entry run_experiment.py \
@@ -51,14 +51,14 @@ autoresearch connect \
 
 6. Instantiate adapter template
    - Fill in template variables: RUN_ID, EXPERIMENT_BRANCH, etc.
-   - Write autoresearch_adapter.py
+   - Write autoPhD_adapter.py
 
 7. Instantiate GitHub Actions templates
    - Fill in {{BRAIN_REPO}} with the brain repo URL
    - Write .github/workflows/brain_listen.yml
    - Write .github/workflows/experiment_resume.yml
 
-8. Create .autoresearch/ directory structure
+8. Create .autoPhD/ directory structure
    - Write config.json
    - Write initial state.md (from state_template.md + Main Agent output)
    - Write budget.json (initial — all zeros used)
@@ -72,14 +72,14 @@ autoresearch connect \
    - Use: gh secret set --repo {repo} --body {value}
 
 10. Commit and push everything to the experiment branch
-    - git add autoresearch_adapter.py health_checker.py .autoresearch/ .github/
+    - git add autoPhD_adapter.py health_checker.py .autoPhD/ .github/
     - git commit -m "autophd: connect H{NNN} brain to experiment repo"
     - git push origin {branch}
 
 11. Print success message
     - What was created
-    - How to run the experiment: python autoresearch_adapter.py run_experiment.py .autoresearch/config.json
-    - Where to watch progress: GitHub Actions tab + .autoresearch/agent_dialogue.md
+    - How to run the experiment: python autoPhD_adapter.py run_experiment.py .autoPhD/config.json
+    - Where to watch progress: GitHub Actions tab + .autoPhD/agent_dialogue.md
 ```
 
 ---
@@ -121,9 +121,9 @@ def kill(repo, branch, reason):
 @click.option("--branch", required=True)
 def status(repo, branch):
     """Show current experiment status."""
-    # git fetch + read .autoresearch/state.md last 10 lines
-    # Read .autoresearch/budget.json and print summary
-    # Read .autoresearch/heartbeat.json last entry
+    # git fetch + read .autoPhD/state.md last 10 lines
+    # Read .autoPhD/budget.json and print summary
+    # Read .autoPhD/heartbeat.json last entry
     ...
 
 # Group all commands
@@ -188,9 +188,9 @@ python brain/connect.py \
 
 # 5. Verify created files
 gh repo clone {you}/test-exp /tmp/verify-exp -- --branch exp/test-H001-20260317-143022
-ls /tmp/verify-exp/autoresearch_adapter.py    # should exist
+ls /tmp/verify-exp/autoPhD_adapter.py    # should exist
 ls /tmp/verify-exp/health_checker.py          # should exist
-ls /tmp/verify-exp/.autoresearch/config.json  # should exist
+ls /tmp/verify-exp/.autoPhD/config.json  # should exist
 ls /tmp/verify-exp/.github/workflows/brain_listen.yml  # should exist
 
 # 6. Verify secrets were set
@@ -202,10 +202,10 @@ gh secret list --repo {you}/test-exp
 
 ## Acceptance criteria
 
-- [ ] `autoresearch connect --dry-run` prints all planned actions without writing anything
-- [ ] `autoresearch connect` creates all required files (adapter, health_checker, .autoresearch/, .github/workflows/)
-- [ ] `autoresearch kill` writes interrupt.json with kill_permanent=True and pushes
-- [ ] `autoresearch status` shows current health and budget summary
+- [ ] `autoPhD connect --dry-run` prints all planned actions without writing anything
+- [ ] `autoPhD connect` creates all required files (adapter, health_checker, .autoPhD/, .github/workflows/)
+- [ ] `autoPhD kill` writes interrupt.json with kill_permanent=True and pushes
+- [ ] `autoPhD status` shows current health and budget summary
 - [ ] All secrets are set via gh CLI (verified by `gh secret list`)
 - [ ] Generated `run_id` includes hypothesis ID and timestamp (no duplicates on re-run)
 - [ ] `--dry-run` flag works and prints exactly what would be done

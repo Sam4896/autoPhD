@@ -3,7 +3,7 @@
 
   "api_key": "YOUR_MEM0_API_KEY_HERE",
   "api_base": "https://api.mem0.ai",
-  "user_id": "autoresearch",
+  "user_id": "autoPhD",
 
   "search_config": {
     "top_k": 5,

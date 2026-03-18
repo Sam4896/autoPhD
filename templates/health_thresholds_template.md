@@ -1,6 +1,6 @@
 # Health Thresholds — {project_name} / {hypothesis_id}
 
-Copy this file to `projects/{project}/health_thresholds.md` and fill it in before running `autoresearch connect`.
+Copy this file to `projects/{project}/health_thresholds.md` and fill it in before running `autoPhD connect`.
 
 This file is read by `brain/connect.py` to generate `health_checker.py` for the experiment repo. Every section must be filled in. Incomplete files will not generate a valid health checker.
 
@@ -8,9 +8,9 @@ This file is read by `brain/connect.py` to generate `health_checker.py` for the 
 
 ## How this file is used
 
-1. `autoresearch connect` reads this file
+1. `autoPhD connect` reads this file
 2. It generates `health_checker.py` from `templates/health_checker.py.j2` using your thresholds
-3. `autoresearch_adapter.py` runs `health_checker.py` in a background thread
+3. `autoPhD_adapter.py` runs `health_checker.py` in a background thread
 4. The health checker reads your experiment logs and applies your thresholds
 5. On a health event, it commits `heartbeat.json` to the experiment branch
 6. The brain listens for that commit via GitHub Actions
