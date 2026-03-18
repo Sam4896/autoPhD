@@ -39,3 +39,9 @@ CLAUDE: Added explicit logging for debugging file detection
 Hooks now log whether commit message and changed files exist in .git directory.
 This helps verify if agents are writing files and if hooks are finding them correctly.
 -->
+
+<!--
+CLAUDE: Final test - hooks should now read commit message correctly
+Fixed path: now writes to repo/.git/claude_commit_msg instead of home/.git/
+This test confirms the hook can find and use the pre-written message.
+-->
