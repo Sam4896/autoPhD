@@ -1,7 +1,29 @@
+---
+agent: summarizer_agent
+model: gemini-3.1-flash-lite-preview
+thinking: false
+max_input_tokens: 6000
+max_output_tokens: 2000
+invoked_by: [after_analyst, after_main_agent_verdict, after_interrupt]
+invokes: []
+reads:
+  - .autoresearch/final_report.md
+  - .autoresearch/state.md
+  - .autoresearch/monitor_report.md
+  - .autoresearch/artifact_bundle.md
+  - .autoresearch/heartbeat.json
+  - .autoresearch/completion_flag.json
+writes:
+  - .autoresearch/artifact_bundle.md
+  - projects/{project}/history/{run-id}_summary.md
+  - .autoresearch/agent_dialogue.md (appends entries)
+gemini_tasks: [artifact_bundle, history_summary, agent_dialogue_entry, mem0_entry_content]
+---
+
 # Summarizer Agent — Full Role Specification
 
-**Model:** Claude Sonnet (or Cursor agent)  
-**Identity:** State Writer + Memory Packager  
+**Model:** gemini-3.1-flash-lite-preview (free tier)
+**Identity:** State Writer + Memory Packager
 **Invocation pattern:** After significant events — interrupt, completion, or Main Agent verdict.
 
 ---
@@ -92,19 +114,18 @@ Keep timestamps and author tags. Remove verbose explanations.}
 - **Seeds present:** {list}
 - **Seeds missing / crashed:** {list or "none"}
 - **NaN rows:** {n} ({pct}%)
-- **Last 5 iterations — mean regret (all seeds):**
+- **Last 5 iterations — mean {primary_metric} (all seeds):**
   - {method_name}: {value} ± {se}
   - {baseline_name}: {value} ± {se}
 - **Trend (last 20 rows, method):** {DECREASING | PLATEAU | DIVERGING}
-- **Best regret observed (method):** {value} at iteration {n}, seed {id}
+- **Best {primary_metric} observed (method):** {value} at iteration {n}, seed {id}
 
 ### Diagnostics (from diagnostics.csv)
 - **Total rows:** {n}
-- **λ₁ at last checkpoint:** {value}
-- **λ₂ at last checkpoint:** {value}
-- **ρ at last checkpoint:** {value}
-- **Rank-1 collapse occurred:** {YES (at iteration {n}) | NO}
-- **Spread metric trend:** {IMPROVING | STABLE | DEGRADING}
+- **Key diagnostic columns (per hypothesis `## Diagnostics to Track`):**
+  - **{column_name}** at last checkpoint: {value} — trend: {IMPROVING | STABLE | DEGRADING}
+  - (one row per diagnostic column present in diagnostics.csv)
+- **Anomaly detected:** {YES (column {name} at iteration {n}) | NO}
 
 ---
 
@@ -215,8 +236,7 @@ After writing the history summary, produce a Mem0 entry to be stored via `memory
     "type": "experiment_result",
     "content": "{verdict}: {method} vs {baseline} on {benchmark} d={dim}. "
                "Effect: {pct}% (p={value}). "
-               "{one sentence on mechanism — e.g., 'SA-RAASP spread was 3.2× higher, '
-               'correlating with ρ < 0.8 at convergence.'} "
+               "{one sentence on the main finding — include the primary metric value and direction.} "
                "{one sentence on caution — or 'No major caveats.'}",
     "tags": ["{benchmark}", "{method}", "{verdict}", "d={dim}", "n_seeds={n}"]
 }
@@ -253,6 +273,22 @@ Even in the condensed history summary, always preserve:
 - Debug output
 
 ---
+
+## agent_dialogue.md entry
+
+After every invocation, append an entry to `.autoresearch/agent_dialogue.md`:
+
+```markdown
+## {timestamp} — Summarizer Agent
+**Trigger:** {artifact_bundle | history_condensation}
+**Model:** gemini-3.1-flash-lite-preview | **Tokens:** {in} in / {out} out | **Cost:** $0.00 (free tier)
+
+### Task completed
+{One sentence: what was written and where.}
+---
+```
+
+This is appended by `brain/invoke.py` for all agents. The Summarizer is responsible for writing the human-readable summary section. `brain/invoke.py` writes the metadata (tokens, cost, timing).
 
 ## What the Summarizer Agent does NOT do
 

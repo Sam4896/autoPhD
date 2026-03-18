@@ -64,80 +64,78 @@ interrupt_poll_every: {n_iterations}
 
 ## Diagnostics to Track
 
-{List every metric to be logged. Each line becomes a column in diagnostics.csv.}
+{List every metric to be logged. Each line becomes a column in diagnostics.csv.
+The Monitor Agent and Analyst Agent read column names directly from the data — be precise here.}
 
-### Primary (must compute)
-- `regret`: normalised simple regret at each iteration, per seed
-- `best_y`: best function value seen so far, per seed
+### Primary (must compute — always include these two)
+- `{primary_metric}`: {description — e.g., "normalised simple regret at each iteration, per seed"}
+- `best_y`: best objective value seen so far, per seed
 
 ### Method-specific diagnostics
-- `spread_metric`: Σᵢ∈S aᵢ²Lᵢ² per RAASP draw
-- `subspace_angle`: angle between A(x_best) and A(x_0) per starting point (degrees)
-- `lambda_1`: largest eigenvalue of G_x at x_best
-- `lambda_2`: second eigenvalue of G_x at x_best
-- `rho`: λ₁/(λ₁+λ₂), effective Fisher rank
+{Add any internal quantities of your method that help diagnose its behaviour.}
+- `{diagnostic_column_1}`: {description and units}
+- `{diagnostic_column_2}`: {description and units}
+- (add as many as needed — each becomes a column in diagnostics.csv)
 
 ### Standard diagnostics
-- `z_score`: (μ(x_best) - f*) / σ(x_best)
-- `trust_region_size`: current TuRBO trust region side length
-- `n_successes`, `n_failures`: TuRBO counters
-- `lengthscale_mean`, `lengthscale_min`, `lengthscale_max`: GP ARD lengthscales
+{Quantities that are informative regardless of the method.}
+- `{standard_column_1}`: {description}
+- `{standard_column_2}`: {description}
 
 ## Stopping Rules
 
-{Rules for health_check.py. Format: YAML. Each rule becomes a custom check.}
+{Rules for health_check.py. Format: YAML. Each rule becomes a custom check.
+Use column names exactly as defined in ## Diagnostics to Track above.}
 
 ```yaml
 stopping_rules:
 
   early_stop_method_losing:
-    description: "Stop if method is 20% worse than baseline past midpoint"
-    trigger: "iteration > budget/2 AND mean_regret_method > mean_regret_baseline * 1.2"
+    description: "Stop if method is {X}% worse than baseline past midpoint"
+    trigger: "iteration > budget/2 AND mean_{primary_metric}_method > mean_{primary_metric}_baseline * {threshold}"
     severity: red
     window: 20  # rows to average over
 
   early_stop_nan:
-    description: "Any NaN in regret"
-    trigger: "any(isnan(regret))"
+    description: "Any NaN in primary metric"
+    trigger: "any(isnan({primary_metric}))"
     severity: red
     window: 1
 
-  warn_rank1_collapse:
-    description: "ρ approaching 1 — exploitation/exploration conflated"
-    trigger: "mean(rho_last_10) > 0.95"
+  warn_diagnostic_threshold:
+    description: "{Description of what this diagnostic measures and why it matters}"
+    trigger: "{condition on a diagnostic column from ## Diagnostics to Track}"
     severity: yellow
     window: 10
 
-  warn_spread_degrading:
-    description: "Spread metric declining over last 30 iterations"
-    trigger: "spread_metric_slope_last_30 < -0.01"
+  warn_plateau:
+    description: "Primary metric not improving"
+    trigger: "{primary_metric}_slope_last_30 {> or < threshold depending on min/max}"
     severity: yellow
     window: 30
 
-  warn_plateau:
-    description: "Regret not improving"
-    trigger: "regret_slope_last_30 > -0.001"
-    severity: yellow
-    window: 30
+  # Add more rules as needed. Each rule fires health_checker.py → heartbeat commit → brain_listen.yml
 ```
 
 ## Statistical Analysis Plan
 
+{The Analyst Agent executes exactly what is written here. Be precise. Specify metric names as they appear in log.csv.}
+
 ```yaml
 primary_test:
-  metric: normalised_regret
+  metric: {column name from log.csv — e.g., normalised_regret}
   aggregation: mean_over_seeds
-  evaluation_point: t=200
-  test: wilcoxon_signed_rank
+  evaluation_point: {e.g., t=200, or "final_iteration"}
+  test: {e.g., wilcoxon_signed_rank | paired_t_test | permutation_test}
   paired: true  # pair by seed
-  alpha: 0.1
-  effect_size_threshold: 0.15  # 15% improvement threshold
+  alpha: {significance threshold, e.g., 0.1}
+  effect_size_threshold: {minimum meaningful improvement, e.g., 0.15 = 15%}
 
 secondary_analyses:
-  - regret_curves: mean ± SE at every iteration
-  - spread_ratio: mean(SA-RAASP spread) / mean(uniform spread)
-  - spectral_trajectory: λ₁, λ₂, ρ vs iteration
-  - correlation: spearman(rho_at_t20, final_regret)
+  - {name}: {description — e.g., "regret curves: mean ± SE at every iteration"}
+  - {name}: {description — e.g., "correlation: spearman({diagnostic_col}_at_t{n}, final_{metric})"}
+  # Add as many secondary analyses as needed.
+  # The Analyst Agent will not compute anything not listed here.
 
 bootstrap:
   n_samples: 10000
@@ -164,13 +162,73 @@ If this experiment depends on results from H{NNN}, state it here.}
 
 ## Expected Difficulty
 
-{LOW | MEDIUM | HIGH}  
+{LOW | MEDIUM | HIGH}
 Reasoning: {one sentence}
 
 ## Open Questions
 
-{Anything you are uncertain about that might affect the design.  
+{Anything you are uncertain about that might affect the design.
 These are questions for the Main Agent to resolve before launch.}
 
 1. {Question 1}
 2. {Question 2}
+
+## References
+
+{Optional. Provide any papers or GitHub repositories the agent should read for insights.
+In GUIDED mode, the Main Agent will fetch these URLs directly (WebFetch, not WebSearch).
+In EXPLORE mode, these are also used as seeds for further literature search.
+
+The Security Agent scans all fetched content before it reaches the Main Agent.
+Be specific about what to extract — agents will not read the full paper, only relevant sections.}
+
+### Papers
+
+- {URL or DOI} — {what to extract: e.g., "Theorem 3.2 — the convergence bound under compactness assumption"}
+- {URL or DOI} — {what to extract: e.g., "Section 4 — hyperparameter sensitivity analysis for this benchmark"}
+
+### GitHub Repositories
+
+- {repo URL} — {what to look for: e.g., "implementation of the baseline method in src/baselines/; compare to our method"}
+- {repo URL} — {what to look for: e.g., "benchmark definition and rotation matrix seed"}
+
+### Notes for the Agent
+
+{Any specific instructions for interpreting the references.
+Example: "The paper uses a different notation: their 'f' is our 'regret'. Their Theorem 2 is the one we extend."
+If no references: delete this section.}
+
+---
+
+## AutoPhD Integration Settings
+
+These fields are read by `brain/connect.py` and `brain/invoke.py`.
+
+```yaml
+autophd:
+  # GUIDED: Brain works only with files you provided. No internet access.
+  # EXPLORE: Brain may call WebSearch with justification gate (you must commit this change yourself).
+  exploration_mode: GUIDED
+
+  # Which files/directories the Experiment Agent may modify
+  allowed_paths:
+    - src/methods/
+    - src/config/
+
+  # Files/directories the Experiment Agent must never touch
+  protected_paths:
+    - src/benchmarks/
+    - data/
+    - run_experiment.py
+    - .github/
+
+  # Human approval required before any code change is committed
+  # Set to "autonomous" to allow agents to commit directly (agents will still notify you)
+  approval_mode: approval_required
+
+  # Maximum experiment relaunches (budget guard)
+  n_experiment_trials: 5
+
+  # Cost limit in USD across all agent calls for this hypothesis
+  max_cost_usd: 10.00
+```
