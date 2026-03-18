@@ -1,5 +1,5 @@
 # Sync Test
-I am testing sync with Cursor.
+I am testing sync with Cursor. Hooks now commit only agent-touched files.
 
 <!--
 CLAUDE: Secret message
