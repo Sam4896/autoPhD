@@ -73,7 +73,7 @@ autoPhD connect \
 
 10. Commit and push everything to the experiment branch
     - git add autoPhD_adapter.py health_checker.py .autoPhD/ .github/
-    - git commit -m "autophd: connect H{NNN} brain to experiment repo"
+    - git commit -m "autoPhD: connect H{NNN} brain to experiment repo"
     - git push origin {branch}
 
 11. Print success message

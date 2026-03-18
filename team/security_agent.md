@@ -24,7 +24,7 @@ gemini_tasks: []
 
 ## Scope change in v1.0
 
-Code safety review (checking src/ diffs) has been moved to the Cursor Code Agent. Cursor implements the `.cursor/rules/autophd_coder.mdc` rules which enforce `allowed_paths`, prohibited patterns, and code safety standards.
+Code safety review (checking src/ diffs) has been moved to the Cursor Code Agent. Cursor implements the `.cursor/rules/autoPhD_coder.mdc` rules which enforce `allowed_paths`, prohibited patterns, and code safety standards.
 
 The Security Agent's sole responsibility is: **scan external content (web results, fetched papers/repos) before it reaches any Claude agent.**
 

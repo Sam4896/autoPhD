@@ -36,7 +36,7 @@ jobs:
     runs-on: ubuntu-latest
     # Prevent concurrent runs on the same branch — queue them
     concurrency:
-      group: autophd-${{ github.ref }}
+      group: autoPhD-${{ github.ref }}
       cancel-in-progress: false
 
     steps:
@@ -49,13 +49,13 @@ jobs:
       - name: Configure git
         run: |
           git config user.name "AutoPhD Brain"
-          git config user.email "autophd@noreply.github.com"
+          git config user.email "autoPhD@noreply.github.com"
 
       - name: Checkout brain repo
         uses: actions/checkout@v4
         with:
           repository: {{BRAIN_REPO}}
-          path: _autophd_brain
+          path: _autoPhD_brain
           token: ${{ secrets.AUTORESEARCH_READ_TOKEN || secrets.GITHUB_TOKEN }}
 
       - name: Set up Python 3.11
@@ -63,10 +63,10 @@ jobs:
         with:
           python-version: '3.11'
           cache: 'pip'
-          cache-dependency-path: '_autophd_brain/requirements.txt'
+          cache-dependency-path: '_autoPhD_brain/requirements.txt'
 
       - name: Install brain dependencies
-        run: pip install -r _autophd_brain/requirements.txt
+        run: pip install -r _autoPhD_brain/requirements.txt
 
       - name: Check kill switch
         id: kill_check
@@ -81,7 +81,7 @@ jobs:
       - name: Invoke brain
         if: steps.kill_check.outputs.kill_permanent != 'True'
         run: |
-          python _autophd_brain/brain/invoke.py
+          python _autoPhD_brain/brain/invoke.py
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
@@ -89,7 +89,7 @@ jobs:
           EVENT_COMMIT_MSG: ${{ github.event.head_commit.message }}
           EXPERIMENT_BRANCH: ${{ github.ref_name }}
           EXPERIMENT_REPO_PATH: ${{ github.workspace }}
-          BRAIN_REPO_PATH: ${{ github.workspace }}/_autophd_brain
+          BRAIN_REPO_PATH: ${{ github.workspace }}/_autoPhD_brain
 
       - name: Push brain outputs
         if: steps.kill_check.outputs.kill_permanent != 'True'

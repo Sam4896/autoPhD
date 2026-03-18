@@ -151,7 +151,7 @@ def git_commit_and_push(
     files: list[str],
     message: str,
     author_name: str = "AutoPhD Brain",
-    author_email: str = "autophd@noreply.github.com",
+    author_email: str = "autoPhD@noreply.github.com",
 ) -> str:
     """Stages files, commits, pushes. Returns commit SHA."""
     ...

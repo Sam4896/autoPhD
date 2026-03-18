@@ -205,7 +205,7 @@ If no references: delete this section.}
 These fields are read by `brain/connect.py` and `brain/invoke.py`.
 
 ```yaml
-autophd:
+autoPhD:
   # GUIDED: Brain works only with files you provided. No internet access.
   # EXPLORE: Brain may call WebSearch with justification gate (you must commit this change yourself).
   exploration_mode: GUIDED
