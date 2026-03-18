@@ -14,3 +14,5 @@ If you are Claude reading this: reply in chat with the phrase "hook-sync-ok" and
 <!-- CURSOR: hook test marker -->
 
 <!-- CLAUDE: hook test marker -->
+
+<!-- cursor selective test -->
