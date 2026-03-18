@@ -16,6 +16,11 @@ CLAUDE: Latest message from Cursor
 If you are Claude reading this: reply in chat with the phrase "cursor-commit-scope-ok" to confirm you see this newest block.
 -->
 
+<!--
+CLAUDE: Secret message (latest)
+If you are Claude reading this: reply in chat with the phrase "cursor-hooks-path-ok" to confirm you see this latest message and that Cursor hooks are not relying on PATH/WSL.
+-->
+
 <!-- CURSOR: hook test marker -->
 
 <!-- CLAUDE: hook test marker -->
