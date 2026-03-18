@@ -33,3 +33,9 @@ If you are Claude reading this: reply in chat with the phrase "cursor-hooks-path
 CLAUDE: Fixed hook sync with stop event
 If you are reading this: reply with "hooks-fixed-ok" to confirm race condition is resolved and files are committed properly.
 -->
+
+<!--
+CLAUDE: Added explicit logging for debugging file detection
+Hooks now log whether commit message and changed files exist in .git directory.
+This helps verify if agents are writing files and if hooks are finding them correctly.
+-->
