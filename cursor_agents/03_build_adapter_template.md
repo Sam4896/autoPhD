@@ -23,7 +23,7 @@
 # These are replaced in the template when generating the actual file
 RUN_ID = "{{RUN_ID}}"                          # e.g., "exp-riemannian-bo-H001-20260317-143022"
 EXPERIMENT_BRANCH = "{{EXPERIMENT_BRANCH}}"    # e.g., "exp/riemannian-bo-H001-20260317-143022"
-AUTORESEARCH_DIR = "{{AUTORESEARCH_DIR}}"      # path to .autoPhD/ in the repo
+AUTOPHD_DIR = "{{AUTOPHD_DIR}}"                # path to .autoPhD/ in the repo
 HEALTH_CHECK_INTERVAL = {{HEALTH_CHECK_INTERVAL}}   # seconds, default 30
 GIT_PULL_INTERVAL = {{GIT_PULL_INTERVAL}}           # seconds, default 30
 ```
