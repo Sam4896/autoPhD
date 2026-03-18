@@ -1,0 +1,17 @@
+{
+  "hooks": {
+    "Stop": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "powershell -Command \"@\\\"C:\\Users\\sak49548\\OneDrive - Fraunhofer\\Desktop\\D\\autoresearch\\\\@\\\" | Set-Content \\\"$env:USERPROFILE\\\\.claude\\workspace_marker\\\" -NoNewline\"",
+            "timeout": 5,
+            "async": true
+          }
+        ]
+      }
+    ]
+  }
+}
